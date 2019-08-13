@@ -3,18 +3,22 @@ import VueRouter from "vue-router";
 
 Vue.use(VueRouter);
 
-import Access from "./components/access/Access.vue";
-import Dashboard from "./components/dashboard/Dashboard.vue";
+import PAccess from "./components/access/PAccess.vue";
+import PDashboard from "./components/dashboard/PDashboard.vue";
 
 const routes = [
     {
         path: "/access",
-        component: Access
+        component: PAccess
     },
     {
         path: "/dashboard",
-        component: Dashboard,
+        component: PDashboard,
         meta: { requiresAuth: true }
+    },
+    {
+        path: "",
+        redirect: "/access"
     }
 ];
 

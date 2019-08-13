@@ -12,13 +12,15 @@
 import Login from "./Login.vue";
 
 export default {
-  name: "Access",
+  name: "PAccess",
   components: {
     Login
   },
   beforeRouteEnter(to, from, next) {
     if (localStorage.getItem("token")) {
-      next(vm => vm.$router.push("/dashboard"));
+      next(vm => {
+        vm.$router.push("/dashboard");
+      });
     } else {
       next();
     }
