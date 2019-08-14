@@ -29,3 +29,14 @@ Route::group([
         Route::get('user', 'AuthController@user');
     });
 });
+
+Route::group([
+    'middleware' => 'auth:api'
+], function () {
+
+    Route::group([
+        'prefix' => 'user'
+    ], function () {
+        Route::get('autocomplete', 'UserController@autocomplete');
+    });
+});

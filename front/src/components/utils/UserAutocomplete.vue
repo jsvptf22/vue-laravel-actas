@@ -3,24 +3,28 @@
     <div class="col-12">
       <multiselect
         v-model="usersSelected"
-        tag-placeholder="Add this as new tag"
         placeholder="Search or add a tag"
         label="name"
-        track-by="code"
+        track-by="id"
+        tagPlaceholder="Click para crear funcionario"
+        selectLabel=" "
+        :loading="loading"
         :options="userList"
         :multiple="true"
         :taggable="true"
+        :value="Array"
+        :hideSelected="true"
         @tag="addTag"
         @search-change="findUsers"
       ></multiselect>
     </div>
-    <div>{{JSON.stringify(userList)}}</div>
+    <div>{{JSON.stringify(usersSelected)}}</div>
   </div>
 </template>
 
 <script>
 import Multiselect from "vue-multiselect";
-
+const axios = require("axios");
 export default {
   name: "UserAutocomplete",
   components: { Multiselect },
@@ -28,32 +32,42 @@ export default {
     return {
       userList: [],
       usersSelected: [],
-      isLoading: false
+      loading: false
     };
   },
   methods: {
     addTag(newTag) {
       const tag = {
         name: newTag,
-        code: newTag.substring(0, 2) + Math.floor(Math.random() * 10000000)
+        id: newTag.substring(0, 2) + Math.floor(Math.random() * 10000000)
       };
       this.usersSelected.push(tag);
+      alert("mostrar ventana modal");
     },
     findUsers(query) {
-      console.log(query);
+      this.loading = true;
 
-      let list = [
-        { name: "aa1", id: 1 },
-        { name: "aa2", id: 2 },
-        { name: "aa3", id: 3 },
-        { name: "aa4", id: 4 },
-        { name: "aa5", id: 5 },
-        { name: "aa6", id: 6 },
-        { name: "aa7", id: 7 }
-      ];
-
-      this.userList = list.filter(f => f.name.indexOf(query) != -1);
-      console.log(this.userList);
+      const ENVDATA = process.env;
+      axios
+        .request({
+          url: `${ENVDATA.VUE_APP_MODULE_API_ROUTE}user/autocomplete`,
+          method: "get",
+          responseType: "json",
+          params: {
+            query
+          },
+          headers: {
+            Authorization: localStorage.getItem("token")
+          }
+        })
+        .then(response => {
+          this.userList = response.data ? response.data : [];
+          this.loading = false;
+        })
+        .catch(response => {
+          alert(response.message);
+          this.loading = false;
+        });
     }
   }
 };
