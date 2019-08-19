@@ -14,35 +14,45 @@
         :taggable="true"
         :value="Array"
         :hideSelected="true"
-        @tag="addTag"
+        @tag="lunchModal"
         @search-change="findUsers"
       ></multiselect>
+      <div v-if="modalShow">
+        <external-user
+          v-bind:showModal="modalShow"
+          v-bind:newUserName="newUserName"
+          v-on:toggleModal="toggleModal"
+        />
+      </div>
     </div>
-    <div>{{JSON.stringify(usersSelected)}}</div>
   </div>
 </template>
 
 <script>
 import Multiselect from "vue-multiselect";
+import ExternalUser from "./ExternalUser.vue";
+
 const axios = require("axios");
+
 export default {
   name: "UserAutocomplete",
-  components: { Multiselect },
+  components: { Multiselect, ExternalUser },
   data: function() {
     return {
       userList: [],
       usersSelected: [],
-      loading: false
+      loading: false,
+      modalShow: false,
+      newUserName: ""
     };
   },
   methods: {
-    addTag(newTag) {
-      const tag = {
-        name: newTag,
-        id: newTag.substring(0, 2) + Math.floor(Math.random() * 10000000)
-      };
-      this.usersSelected.push(tag);
-      alert("mostrar ventana modal");
+    lunchModal(newTag) {
+      this.newUserName = newTag;
+    },
+    toggleModal(value) {
+      this.modalShow = value;
+      console.log(this.modalShow);
     },
     findUsers(query) {
       this.loading = true;
@@ -68,6 +78,11 @@ export default {
           alert(response.message);
           this.loading = false;
         });
+    }
+  },
+  watch: {
+    newUserName: function(val) {
+      this.modalShow = true;
     }
   }
 };
