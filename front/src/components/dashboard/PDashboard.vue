@@ -1,20 +1,25 @@
 <template>
-  <div class="container h-100">
+  <div class="container">
     <div class="row">
-      <div class="col">
-        <UserAutocomplete />
+      <div class="col-12">
+        <button class="btn btn-primary" v-on:click="createDocument">Crear Documento</button>
+      </div>
+    </div>
+    <div class="row pt-2">
+      <div class="col-12">
+        <router-view></router-view>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import UserAutocomplete from "./../utils/UserAutocomplete.vue";
-
 export default {
   name: "PDashboard",
-  components: {
-    UserAutocomplete
+  methods: {
+    createDocument() {
+      this.$router.push("/document");
+    }
   }
 };
 </script>

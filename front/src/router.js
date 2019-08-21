@@ -5,6 +5,7 @@ Vue.use(VueRouter);
 
 import PAccess from "./components/access/PAccess.vue";
 import PDashboard from "./components/dashboard/PDashboard.vue";
+import PDashboardRoutes from "./components/dashboard/router"
 
 const routes = [
     {
@@ -14,7 +15,8 @@ const routes = [
     {
         path: "/dashboard",
         component: PDashboard,
-        meta: { requiresAuth: true }
+        meta: { requiresAuth: true },
+        children: PDashboardRoutes
     },
     {
         path: "",

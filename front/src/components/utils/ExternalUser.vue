@@ -43,10 +43,11 @@ export default {
     },
     handleOk(bvModalEvt) {
       // Prevent modal from closing
-      bvModalEvt.preventDefault();
-      alert("validar");
-      return;
-      // Hide the modal manually
+      if(bvModalEvt.preventDefault()){
+        alert('validar');
+        return;
+      }
+      
       this.$nextTick(() => {
         this.$refs.modal.hide();
       });

@@ -52,7 +52,6 @@ export default {
     },
     toggleModal(value) {
       this.modalShow = value;
-      console.log(this.modalShow);
     },
     findUsers(query) {
       this.loading = true;
@@ -81,7 +80,7 @@ export default {
     }
   },
   watch: {
-    newUserName: function(val) {
+    newUserName: function() {
       this.modalShow = true;
     }
   }
