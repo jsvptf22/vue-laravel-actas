@@ -30,7 +30,7 @@ const router = new VueRouter({
 
 router.beforeEach((to, from, next) => {
     if (to.matched.some(record => record.meta.requiresAuth)) {
-        if (!localStorage.getItem("token")) {
+        if (!router.app.$session.exists()) {
             next({
                 path: "/access"
             });

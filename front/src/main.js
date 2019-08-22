@@ -1,6 +1,8 @@
 import Vue from "vue";
 import BootstrapVue from "bootstrap-vue";
+import VueSession from 'vue-session';
 
+Vue.use(VueSession)
 Vue.use(BootstrapVue);
 Vue.config.productionTip = false;
 

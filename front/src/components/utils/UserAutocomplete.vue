@@ -57,6 +57,7 @@ export default {
       this.loading = true;
 
       const ENVDATA = process.env;
+
       axios
         .request({
           url: `${ENVDATA.VUE_APP_MODULE_API_ROUTE}user/autocomplete`,
@@ -66,7 +67,7 @@ export default {
             query
           },
           headers: {
-            Authorization: localStorage.getItem("token")
+            Authorization: this.$session.get("token")
           }
         })
         .then(response => {

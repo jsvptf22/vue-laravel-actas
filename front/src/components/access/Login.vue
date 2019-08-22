@@ -62,7 +62,9 @@ export default {
           }
         })
         .then(response => {
-          localStorage.setItem("token", "Bearer " + response.data.access_token);
+          let token = "Bearer " + response.data.access_token;
+          this.$session.start();
+          this.$session.set("token", token);
           this.$router.push("/dashboard");
         })
         .catch(response => {

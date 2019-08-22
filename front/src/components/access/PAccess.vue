@@ -17,13 +17,11 @@ export default {
     Login
   },
   beforeRouteEnter(to, from, next) {
-    if (localStorage.getItem("token")) {
-      next(vm => {
+    next(vm => {
+      if (vm.$session.exists()) {
         vm.$router.push("/dashboard");
-      });
-    } else {
-      next();
-    }
+      }
+    });
   }
 };
 </script>

@@ -2,6 +2,7 @@
   <div class="container-fluid">
     <div class="row">
       <div class="col-12">
+        <button class="btn btn-danger" v-on:click="logout">Cerrar sesión</button>
         <button class="btn btn-primary" v-on:click="createDocument">Crear Documento</button>
       </div>
     </div>
@@ -17,6 +18,10 @@
 export default {
   name: "PDashboard",
   methods: {
+    logout() {
+      this.$session.destroy();
+      this.$router.push("/access");
+    },
     createDocument() {
       this.$router.push("/document");
     }
