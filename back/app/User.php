@@ -11,13 +11,36 @@ class User extends Authenticatable
 {
     use Notifiable, HasApiTokens;
 
+    const CREATED_AT = 'create_time';
+    const UPDATED_AT = 'update_time';
+
+    /**
+     * The table associated with the model.
+     *
+     * @var string
+     */
+    protected $table = 's_user';
+
+    /**
+     * The primary key associated with the table.
+     *
+     * @var string
+     */
+    protected $primaryKey = 'ids_user';
+
     /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password',
+        'login',
+        'email',
+        'password',
+        'firstname',
+        'secondname',
+        'firstlastname',
+        'secondlastname'
     ];
 
     /**
@@ -26,15 +49,17 @@ class User extends Authenticatable
      * @var array
      */
     protected $hidden = [
-        'password', 'remember_token',
+        'password'
     ];
 
     /**
-     * The attributes that should be cast to native types.
+     * Find the user instance for the given login.
      *
-     * @var array
+     * @param  string  $login
+     * @return \App\User
      */
-    protected $casts = [
-        'email_verified_at' => 'datetime',
-    ];
+    public function findForPassport($login)
+    {
+        return $this->where('login', $login)->first();
+    }
 }
