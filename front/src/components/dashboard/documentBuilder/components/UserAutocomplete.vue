@@ -3,7 +3,7 @@
     <div class="col-12">
       <multiselect
         v-model="usersSelected"
-        placeholder="Search or add a tag"
+        placeholder="Busca un asistente"
         label="name"
         track-by="id"
         tagPlaceholder="Click para crear funcionario"
@@ -64,7 +64,8 @@ export default {
           method: "get",
           responseType: "json",
           params: {
-            query
+            query,
+            external: 0
           },
           headers: {
             Authorization: this.$session.get("token")
@@ -87,5 +88,5 @@ export default {
   }
 };
 </script>
-<style src="../../../node_modules/vue-multiselect/dist/vue-multiselect.min.css"></style>
+<style src="../../../../../node_modules/vue-multiselect/dist/vue-multiselect.min.css"></style>
 

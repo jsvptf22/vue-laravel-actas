@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\User;
 use Illuminate\Http\Request;
 
 class UserController extends Controller
@@ -14,10 +13,12 @@ class UserController extends Controller
     public function autocomplete(Request $request)
     {
         if ($request->input('query')) {
+            $model = $request->input('external') ?
+                'App\AllUser' : 'App\User';
             $query = $request->input('query');
-            $data = User::where('name', 'like', "%{$query}%")
+            $data = $model::where('name', 'like', "%{$query}%")
                 ->limit(20)
-                ->get(['id', 'name', 'email']);
+                ->get();
         } else {
             $data = null;
         }
