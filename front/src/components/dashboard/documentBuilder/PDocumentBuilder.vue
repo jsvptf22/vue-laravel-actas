@@ -26,7 +26,8 @@
           </div>
           <div class="row-fluid">
             <div class="col-12 p-3">
-              <textarea class="form-control" rows="10"></textarea>
+              <span v-if="documentInformation.subject">Asunto :{{ documentInformation.subject }}</span>
+              <!--<textarea class="form-control" rows="10"></textarea>-->
             </div>
           </div>
           <div class="row-fluid mt-5">
@@ -48,6 +49,7 @@
 </template>
 
 <script>
+import { mapState } from "vuex";
 export default {
   name: "PDocumentBuilder",
   methods: {
@@ -68,7 +70,8 @@ export default {
       }
       this.$bvModal.show("componentModal");
     }
-  }
+  },
+  computed: mapState(["documentInformation"])
 };
 </script>
 
