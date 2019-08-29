@@ -85,6 +85,11 @@ export default {
     newUserName: function() {
       this.modalShow = true;
     }
+  },
+  created() {
+    this.$store.commit("refreshDocumentInformation", {
+      modalTitle: "Validación de asistencia"
+    });
   }
 };
 </script>

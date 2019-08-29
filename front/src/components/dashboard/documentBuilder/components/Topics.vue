@@ -32,6 +32,7 @@
 </template>
 
 <script>
+import { mapState } from "vuex";
 export default {
   name: "Topics",
   data: function() {
@@ -43,12 +44,24 @@ export default {
   methods: {
     save() {
       let item = {
-        id: Math.round(Math.random() * 1000),
+        id: this.topicList.length,
         label: this.topic
       };
-      this.topicList.push(item);
+
       this.topic = "";
+      this.topicList.push(item);
+      this.$store.commit("refreshDocumentInformation", {
+        topicList: this.topicList
+      });
     }
+  },
+  computed: mapState(["documentInformation"]),
+  created() {
+    this.$store.commit("refreshDocumentInformation", {
+      modalTitle: "Creación de temas"
+    });
+
+    this.topicList = this.documentInformation.topicList;
   }
 };
 </script>

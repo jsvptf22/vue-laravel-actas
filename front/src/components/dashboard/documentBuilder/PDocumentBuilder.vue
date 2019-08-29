@@ -26,7 +26,46 @@
           </div>
           <div class="row-fluid">
             <div class="col-12 p-3">
-              <span v-if="documentInformation.subject">Asunto :{{ documentInformation.subject }}</span>
+              <div class="row py-4" id="subjectTemplate" v-if="documentInformation.subject">
+                <div class="col-12">
+                  <span>Asunto :{{ documentInformation.subject }}</span>
+                </div>
+              </div>
+              <div
+                class="row py-4"
+                id="topicListTempalte"
+                v-if="documentInformation.topicList.length"
+              >
+                <div class="col-12">
+                  Listado de temas
+                  <ul>
+                    <li
+                      v-for="topic of documentInformation.topicList"
+                      v-bind:key="topic.id"
+                    >{{topic.label}}</li>
+                  </ul>
+                </div>
+              </div>
+
+              <div
+                class="row py-4"
+                id="topicDescriptionTempalte"
+                v-if="documentInformation.topicListDescription.length"
+              >
+                <div class="col-12">
+                  Listado de temas
+                  <ul>
+                    <li
+                      v-for="item of documentInformation.topicListDescription"
+                      v-bind:key="item.id"
+                    >
+                      <span>{{getTopicLabel(item.topic)}}</span>
+                      <br />
+                      <p>{{item.description}}</p>
+                    </li>
+                  </ul>
+                </div>
+              </div>
               <!--<textarea class="form-control" rows="10"></textarea>-->
             </div>
           </div>
@@ -40,8 +79,14 @@
     </div>
     <div class="row">
       <div class="col-12">
-        <b-modal id="componentModal" ref="modal" title="Crear usuario">
-          <router-view></router-view>
+        <b-modal id="componentModal" ref="modal" v-bind:title="documentInformation.modalTitle">
+          <template slot="default">
+            <router-view></router-view>
+          </template>
+
+          <template slot="modal-footer" slot-scope="{ ok }">
+            <b-button size="sm" variant="primary" @click="ok()">Ver documento</b-button>
+          </template>
         </b-modal>
       </div>
     </div>
@@ -69,6 +114,10 @@ export default {
           break;
       }
       this.$bvModal.show("componentModal");
+    },
+    getTopicLabel(topicId) {
+      return this.documentInformation.topicList.find(i => i.id == topicId)
+        .label;
     }
   },
   computed: mapState(["documentInformation"])

@@ -4,13 +4,14 @@
       <div class="form-group">
         <label for="subject">Asunto</label>
         <input id="subject" type="text" class="form-control" v-model="subject" />
-        <button v-on:click="change">change</button>
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import { mapState } from "vuex";
+
 export default {
   name: "Subject",
   data: function() {
@@ -18,12 +19,20 @@ export default {
       subject: ""
     };
   },
-  methods: {
-    change() {
+  watch: {
+    subject: function(val) {
       this.$store.commit("refreshDocumentInformation", {
-        subject: this.subject
+        subject: val
       });
     }
+  },
+  computed: mapState(["documentInformation"]),
+  created() {
+    this.$store.commit("refreshDocumentInformation", {
+      modalTitle: "Asignación de asunto"
+    });
+
+    this.subject = this.documentInformation.subject;
   }
 };
 </script>

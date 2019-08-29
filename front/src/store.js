@@ -5,11 +5,16 @@ Vue.use(Vuex);
 
 const store = new Vuex.Store({
     state: {
-        documentInformation: {}
+        documentInformation: {
+            modalTitle: "",
+            subject: "",
+            topicList: [],
+            topicListDescription: []
+        }
     },
     mutations: {
         refreshDocumentInformation(state, information) {
-            state.documentInformation = information;
+            state.documentInformation = { ...state.documentInformation, ...information };
         }
     }
 })
