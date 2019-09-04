@@ -4,7 +4,7 @@
       <multiselect
         v-model="usersSelected"
         placeholder="Busca un asistente"
-        label="name"
+        label="complete_name"
         track-by="id"
         tagPlaceholder="Click para crear funcionario"
         selectLabel=" "
@@ -22,6 +22,7 @@
           v-bind:showModal="modalShow"
           v-bind:newUserName="newUserName"
           v-on:toggleModal="toggleModal"
+          v-on:createUser="createUser"
         />
       </div>
     </div>
@@ -50,6 +51,9 @@ export default {
     lunchModal(newTag) {
       this.newUserName = newTag;
     },
+    createUser(user) {
+      this.usersSelected.push(user);
+    },
     toggleModal(value) {
       this.modalShow = value;
     },
@@ -64,8 +68,7 @@ export default {
           method: "get",
           responseType: "json",
           params: {
-            query,
-            external: 0
+            query
           },
           headers: {
             Authorization: this.$session.get("token")

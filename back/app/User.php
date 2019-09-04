@@ -40,7 +40,8 @@ class User extends Authenticatable
         'firstname',
         'secondname',
         'firstlastname',
-        'secondlastname'
+        'secondlastname',
+        'state'
     ];
 
     /**

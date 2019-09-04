@@ -21,6 +21,8 @@
 </template>
 
 <script>
+const axios = require("axios");
+
 export default {
   name: "ExternalUser",
   props: ["newUserName", "showModal"],
@@ -42,15 +44,38 @@ export default {
       this.email = "";
     },
     handleOk(bvModalEvt) {
-      // Prevent modal from closing
-      if(bvModalEvt.preventDefault()){
-        alert('validar');
-        return;
-      }
-      
-      this.$nextTick(() => {
-        this.$refs.modal.hide();
-      });
+      bvModalEvt.preventDefault();
+      const ENVDATA = process.env;
+
+      axios
+        .request({
+          url: `${ENVDATA.VUE_APP_MODULE_API_ROUTE}user/createExternal`,
+          method: "post",
+          responseType: "json",
+          data: {
+            email: this.email,
+            username: this.username
+          },
+          headers: {
+            Authorization: this.$session.get("token")
+          }
+        })
+        .then(response => {
+          if (response.data.success) {
+            this.$emit("createUser", {
+              id: response.data.id + "-" + 1,
+              complete_name: this.username,
+              email: this.email
+            });
+
+            this.$nextTick(() => {
+              this.$refs.modal.hide();
+            });
+          }
+        })
+        .catch(response => {
+          alert(response.message);
+        });
     }
   }
 };

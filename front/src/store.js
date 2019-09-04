@@ -10,11 +10,15 @@ const store = new Vuex.Store({
             subject: "",
             topicList: [],
             topicListDescription: []
-        }
+        },
+        newUser: {}
     },
     mutations: {
         refreshDocumentInformation(state, information) {
             state.documentInformation = { ...state.documentInformation, ...information };
+        },
+        createNewExternalUser(state, data) {
+            state.newUser = data;
         }
     }
 })

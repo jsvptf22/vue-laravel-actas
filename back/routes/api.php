@@ -33,10 +33,10 @@ Route::group([
 Route::group([
     'middleware' => 'auth:api'
 ], function () {
-
     Route::group([
         'prefix' => 'user'
     ], function () {
         Route::get('autocomplete', 'UserController@autocomplete');
+        Route::post('createExternal', 'UserController@createExternal');
     });
 });

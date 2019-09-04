@@ -13,16 +13,27 @@ class UserController extends Controller
     public function autocomplete(Request $request)
     {
         if ($request->input('query')) {
-            $model = $request->input('external') ?
-                'App\AllUser' : 'App\User';
             $query = $request->input('query');
-            $data = $model::where('name', 'like', "%{$query}%")
+            $data = \App\VActUser::where('complete_name', 'like', "%{$query}%")
                 ->limit(20)
-                ->get();
+                ->get(['id', 'complete_name']);
         } else {
             $data = null;
         }
 
         return $data;
+    }
+
+    public function createExternal(Request $request)
+    {
+        $ActExternalUser = new \App\ActExternalUser();
+        $ActExternalUser->firstname = $request->input('username');
+        $ActExternalUser->firstlastname = '';
+        $ActExternalUser->email = $request->input('email') ?? '';
+
+        return [
+            'success' => $ActExternalUser->save(),
+            'id' => $ActExternalUser->idact_external_user
+        ];
     }
 }

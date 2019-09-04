@@ -22,6 +22,7 @@ class CreateSUserTable extends Migration
 			$table->string('secondname', 100)->nullable();
 			$table->string('firstlastname', 100);
 			$table->string('secondlastname', 100)->nullable();
+			$table->string('state', 45)->default('Activo');
 			$table->timestamp('create_time')->nullable()->default(DB::raw('CURRENT_TIMESTAMP'));
 			$table->dateTime('update_time')->nullable();
 		});
