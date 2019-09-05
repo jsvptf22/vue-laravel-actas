@@ -30,6 +30,8 @@
 </template>
 
 <script>
+import { mapState } from "vuex";
+
 import Multiselect from "vue-multiselect";
 import ExternalUser from "./ExternalUser.vue";
 
@@ -87,12 +89,20 @@ export default {
   watch: {
     newUserName: function() {
       this.modalShow = true;
+    },
+    usersSelected: function(value) {
+      this.$store.commit("refreshDocumentInformation", {
+        userList: value
+      });
     }
   },
+  computed: mapState(["documentInformation"]),
   created() {
     this.$store.commit("refreshDocumentInformation", {
       modalTitle: "Validación de asistencia"
     });
+
+    this.usersSelected = this.documentInformation.userList;
   }
 };
 </script>

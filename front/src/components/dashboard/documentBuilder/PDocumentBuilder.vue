@@ -26,6 +26,16 @@
           </div>
           <div class="row-fluid">
             <div class="col-12 p-3">
+              <div class="row py-4" id="userListTemplate" v-if="documentInformation.userList">
+                <div class="col-12">
+                  <ul>
+                    <li
+                      v-for="user of documentInformation.userList"
+                      v-bind:key="user.id"
+                    >{{user.complete_name}}</li>
+                  </ul>
+                </div>
+              </div>
               <div class="row py-4" id="subjectTemplate" v-if="documentInformation.subject">
                 <div class="col-12">
                   <span>Asunto :{{ documentInformation.subject }}</span>

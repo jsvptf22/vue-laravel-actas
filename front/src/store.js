@@ -9,16 +9,13 @@ const store = new Vuex.Store({
             modalTitle: "",
             subject: "",
             topicList: [],
-            topicListDescription: []
-        },
-        newUser: {}
+            topicListDescription: [],
+            userList: []
+        }
     },
     mutations: {
         refreshDocumentInformation(state, information) {
             state.documentInformation = { ...state.documentInformation, ...information };
-        },
-        createNewExternalUser(state, data) {
-            state.newUser = data;
         }
     }
 })

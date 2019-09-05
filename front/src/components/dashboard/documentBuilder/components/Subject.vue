@@ -20,9 +20,9 @@ export default {
     };
   },
   watch: {
-    subject: function(val) {
+    subject: function(value) {
       this.$store.commit("refreshDocumentInformation", {
-        subject: val
+        subject: value
       });
     }
   },
