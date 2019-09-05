@@ -2,19 +2,28 @@
   <div>
     <div class="row">
       <div class="col-auto">
-        <div class="btn-group-vertical mr-2" role="group" aria-label="First group">
-          <button
-            type="button"
-            class="btn btn-secondary"
-            v-on:click="showModal(1)"
-          >Validar asistentes</button>
-          <button type="button" class="btn btn-secondary" v-on:click="showModal(2)">Crear asunto</button>
-          <button type="button" class="btn btn-secondary" v-on:click="showModal(3)">Crear temas</button>
-          <button
-            type="button"
-            class="btn btn-secondary"
-            v-on:click="showModal(4)"
-          >Desarrollo de tema</button>
+        <div class="row">
+          <div class="col-12">
+            <div class="btn-group-vertical mr-2" role="group" aria-label="First group">
+              <button
+                type="button"
+                class="btn btn-secondary"
+                v-on:click="showModal(1)"
+              >Validar asistentes</button>
+              <button type="button" class="btn btn-secondary" v-on:click="showModal(2)">Crear asunto</button>
+              <button type="button" class="btn btn-secondary" v-on:click="showModal(3)">Crear temas</button>
+              <button
+                type="button"
+                class="btn btn-secondary"
+                v-on:click="showModal(4)"
+              >Desarrollo de tema</button>
+            </div>
+          </div>
+        </div>
+        <div class="row pt-3">
+          <div class="col-12">
+            <button class="btn btn-primary btn-block" v-on:click="saveData">Guardar datos</button>
+          </div>
         </div>
       </div>
       <div class="col">
@@ -105,9 +114,33 @@
 
 <script>
 import { mapState } from "vuex";
+
+const axios = require("axios");
+
 export default {
   name: "PDocumentBuilder",
   methods: {
+    saveData() {
+      const ENVDATA = process.env;
+
+      axios
+        .request({
+          url: `${ENVDATA.VUE_APP_MODULE_API_ROUTE}document/save`,
+          method: "post",
+          responseType: "json",
+          data: this.documentInformation,
+          headers: {
+            Authorization: this.$session.get("token")
+          }
+        })
+        .then(response => {
+          console.log(response);
+          
+        })
+        .catch(response => {
+          alert(response.message);
+        });
+    },
     showModal(type) {
       switch (type) {
         case 1:

@@ -24,6 +24,9 @@ class UserController extends Controller
         return $data;
     }
 
+    /**
+     * crea un usuario externo al sistema
+     */
     public function createExternal(Request $request)
     {
         $ActExternalUser = new \App\ActExternalUser();

@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class VActUser extends Model
 {
+    public $incrementing = false;
+
     /**
      * The table associated with the model.
      *

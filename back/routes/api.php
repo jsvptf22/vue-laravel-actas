@@ -39,4 +39,10 @@ Route::group([
         Route::get('autocomplete', 'UserController@autocomplete');
         Route::post('createExternal', 'UserController@createExternal');
     });
+
+    Route::group([
+        'prefix' => 'document'
+    ], function () {
+        Route::post('save', 'ActDocumentController@save');
+    });
 });
