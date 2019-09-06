@@ -24,7 +24,17 @@
     <div class="row">
       <div class="col-12">
         <ul v-if="topicList.length">
-          <li v-for="topic of topicList" v-bind:key="topic.id">{{topic.label}}</li>
+          <li
+            v-for="topic of topicList"
+            v-bind:key="topic.id"
+            style="height:40px;list-style-type:none;"
+          >
+            {{topic.label}}
+            <button
+              v-on:click="remove(topic.id)"
+              class="btn btn-sm btn-danger float-left mr-2"
+            >X</button>
+          </li>
         </ul>
       </div>
     </div>
@@ -44,7 +54,7 @@ export default {
   methods: {
     save() {
       let item = {
-        id: this.topicList.length,
+        id: new Date().getTime() + "-" + this.topicList.length,
         label: this.topic
       };
 
@@ -52,6 +62,16 @@ export default {
       this.topicList.push(item);
       this.$store.commit("refreshDocumentInformation", {
         topicList: this.topicList
+      });
+    },
+    remove(topicId) {
+      this.topicList = this.topicList.filter(t => t.id != topicId);
+      let topicListDescription = this.documentInformation.topicListDescription.filter(
+        i => i.topic != topicId
+      );
+      this.$store.commit("refreshDocumentInformation", {
+        topicList: this.topicList,
+        topicListDescription: topicListDescription
       });
     }
   },

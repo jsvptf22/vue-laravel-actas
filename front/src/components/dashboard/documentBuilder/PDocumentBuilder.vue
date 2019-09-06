@@ -35,6 +35,9 @@
           </div>
           <div class="row-fluid">
             <div class="col-12 p-3">
+              <div class="row">
+                <div class="col-12">id: {{documentInformation.documentId}}</div>
+              </div>
               <div class="row py-4" id="userListTemplate" v-if="documentInformation.userList">
                 <div class="col-12">
                   <ul>
@@ -134,12 +137,38 @@ export default {
           }
         })
         .then(response => {
-          console.log(response);
-          
+          if (response.data.success) {
+            this.updateData(response.data.data);
+          } else {
+            alert("Error al guardar");
+          }
         })
         .catch(response => {
           alert(response.message);
         });
+    },
+    updateData(data) {
+      let newData = {
+        documentId: data.documentId,
+        topicList: [],
+        topicListDescription: []
+      };
+
+      data.topics.forEach(t => {
+        newData.topicList.push({
+          id: t.idact_document_topic,
+          label: t.name
+        });
+
+        if (t.description) {
+          newData.topicListDescription.push({
+            topic: t.idact_document_topic,
+            description: t.description
+          });
+        }
+      });
+
+      this.$store.commit("refreshDocumentInformation", newData);
     },
     showModal(type) {
       switch (type) {

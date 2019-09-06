@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use stdClass;
 
 class ActDocumentController extends Controller
 {
@@ -11,7 +12,7 @@ class ActDocumentController extends Controller
         $Response = (object) [
             'success' => 0,
             'message' => '',
-            'data' => null
+            'data' => new stdClass()
         ];
 
         $data = (object) $request->all();
@@ -35,14 +36,22 @@ class ActDocumentController extends Controller
                 $data->userList,
                 $ActDocument->idact_document
             );
+            $Response->data->topics = $this->saveTopics(
+                $data->topicList,
+                $data->topicListDescription,
+                $ActDocument->idact_document
+            );
             $Response->success = 1;
             $Response->message = "Docuento guardado";
-            $Response->data = $ActDocument->idact_document;
+            $Response->data->documentId = $ActDocument->idact_document;
         }
 
         return json_encode($Response);
     }
 
+    /**
+     * asigna el creador del documento
+     */
     public function bindManager($user, $documentId)
     {
         $ActDocumentUser = new \App\ActDocumentUser();
@@ -53,6 +62,9 @@ class ActDocumentController extends Controller
         $ActDocumentUser->save();
     }
 
+    /**
+     * guarda los asistentes del encuentro
+     */
     public function bindAsistants($userList, $documentId)
     {
         \App\ActDocumentUser::where('fk_act_document', $documentId)
@@ -76,5 +88,43 @@ class ActDocumentController extends Controller
             $ActDocumentUser->fk_act_document = $documentId;
             $ActDocumentUser->save();
         }
+    }
+
+    /**
+     * guarda los temas del encuentro
+     */
+    public function saveTopics($topicList, $topicListDescription, $documentId)
+    {
+        \App\ActDocumentTopic::where('fk_act_document', $documentId)
+            ->where('state', 1)
+            ->update(['state' => 0]);
+
+        $relations = [];
+        foreach ($topicList as $topic) {
+            $ActDocumentTopic = \App\ActDocumentTopic::where('idact_document_topic', $topic['id'])
+                ->where('fk_act_document', $documentId)
+                ->first();
+
+            if (!$ActDocumentTopic) {
+                $ActDocumentTopic = new \App\ActDocumentTopic();
+            }
+
+            $ActDocumentTopic->state = 1;
+            $ActDocumentTopic->name = $topic['label'];
+            $ActDocumentTopic->fk_act_document = $documentId;
+            $ActDocumentTopic->save();
+
+            $relations[$topic['id']] = $ActDocumentTopic->idact_document_topic;
+        }
+
+        foreach ($topicListDescription as $topic) {
+            $id = $relations[$topic['topic']];
+            $ActDocumentTopic = \App\ActDocumentTopic::find($id);
+            $ActDocumentTopic->description = $topic['description'];
+            $ActDocumentTopic->save();
+        }
+
+        return \App\ActDocumentTopic::where('state', 1)
+            ->where('fk_act_document', $documentId)->get();
     }
 }

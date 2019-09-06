@@ -6,6 +6,7 @@ Vue.use(Vuex);
 const store = new Vuex.Store({
     state: {
         documentInformation: {
+            documentId: 0,
             modalTitle: "",
             subject: "",
             topicList: [],
