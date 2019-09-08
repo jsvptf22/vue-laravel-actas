@@ -8,6 +8,7 @@
 
         <!-- Fonts -->
         <link href="https://fonts.googleapis.com/css?family=Nunito:200,600" rel="stylesheet">
+        INSERT INTO `actas`.`s_user` (`login`, `password`, `email`, `firstname`, `secondname`, `firstlastname`, `secondlastname`, `state`) VALUES ('sebasjsv22@gmail.com', '$2y$10$RUE6Dir6T2AEGlVYf.q67OYDui.3gmrUhjej2IJ3kemyWxfmNwfUq', 'sebasjsv22@gmail.com', 'jhon', 'sebastian', 'valencia', 'perez', '1');
 
         <!-- Styles -->
         <style>

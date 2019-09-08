@@ -26,9 +26,7 @@ class ActExternalUser extends Model
      * @var array
      */
     protected $fillable = [
-        'login',
         'email',
-        'password',
         'firstname',
         'secondname',
         'firstlastname',
