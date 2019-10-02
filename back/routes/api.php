@@ -44,5 +44,6 @@ Route::group([
         'prefix' => 'document'
     ], function () {
         Route::post('save', 'ActDocumentController@save');
+        Route::post('generatePdf', 'ActDocumentController@generatePdf');
     });
 });

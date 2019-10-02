@@ -169,6 +169,36 @@ export default {
       });
 
       this.$store.commit("refreshDocumentInformation", newData);
+      this.generatePdf(data.documentId);
+    },
+    generatePdf(documentId) {
+      const ENVDATA = process.env;
+
+      axios
+        .request({
+          url: `${ENVDATA.VUE_APP_MODULE_API_ROUTE}document/generatePdf`,
+          method: "post",
+          responseType: "json",
+          data: {
+            documentId
+          },
+          headers: {
+            Authorization: this.$session.get("token")
+          }
+        })
+        .then(response => {
+          if (response.data.success) {
+            window.open(
+              ENVDATA.VUE_APP_MODULE_ROUTE + response.data.data.route,
+              "_blank"
+            );
+          } else {
+            alert("Error al guardar");
+          }
+        })
+        .catch(response => {
+          alert(response.message);
+        });
     },
     showModal(type) {
       switch (type) {
