@@ -14,13 +14,12 @@ class UserController extends Controller
     {
         if ($request->input('query')) {
             $query = $request->input('query');
-            $data = \App\VActUser::where('complete_name', 'like', "%{$query}%")
+            $data = \App\VActUser::where('nombre_completo', 'like', "%{$query}%")
                 ->limit(20)
-                ->get(['id', 'complete_name']);
+                ->get(['id', 'nombre_completo']);
         } else {
             $data = null;
         }
-
         return $data;
     }
 
@@ -29,11 +28,12 @@ class UserController extends Controller
      */
     public function createExternal(Request $request)
     {
+        throw new Exception("hacer peticion a app", 1);
+
         $ActExternalUser = new \App\ActExternalUser();
         $ActExternalUser->firstname = $request->input('username');
         $ActExternalUser->firstlastname = '';
         $ActExternalUser->email = $request->input('email') ?? '';
-
         return [
             'success' => $ActExternalUser->save(),
             'id' => $ActExternalUser->idact_external_user

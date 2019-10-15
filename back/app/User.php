@@ -3,27 +3,27 @@
 namespace App;
 
 use Laravel\Passport\HasApiTokens;
-use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
-    use Notifiable, HasApiTokens;
+    use HasApiTokens, Notifiable;
 
     /**
      * The table associated with the model.
      *
      * @var string
      */
-    protected $table = 's_user';
+    protected $table = 'funcionario';
 
     /**
      * The primary key associated with the table.
      *
      * @var string
      */
-    protected $primaryKey = 'ids_user';
+    protected $primaryKey = 'idfuncionario';
 
     /**
      * The attributes that are mass assignable.
@@ -31,14 +31,33 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'login',
+        'nombres',
+        'apellidos',
+        'firma',
+        'firma_temporal',
+        'firma_original',
+        'estado',
+        'fecha_ingreso',
+        'clave',
+        'nit',
+        'perfil',
+        'debe_firmar',
+        'tipo',
+        'ultimo_pwd',
+        'mensajeria',
         'email',
-        'password',
-        'firstname',
-        'secondname',
-        'firstlastname',
-        'secondlastname',
-        'state'
+        'sistema',
+        'email_contrasena',
+        'direccion',
+        'telefono',
+        'fecha_fin_inactivo',
+        'intento_login',
+        'foto_original',
+        'foto_recorte',
+        'foto_cordenadas',
+        'ventanilla_radicacion',
+        'pertenece_nucleo',
+        'token'
     ];
 
     /**
@@ -47,17 +66,16 @@ class User extends Authenticatable
      * @var array
      */
     protected $hidden = [
-        'password'
+        'clave'
     ];
 
     /**
-     * Find the user instance for the given login.
+     * The attributes that should be cast to native types.
      *
-     * @param  string  $login
-     * @return \App\User
+     * @var array
      */
-    public function findForPassport($login)
-    {
-        return $this->where('login', $login)->first();
-    }
+    protected $casts = [
+        'ultimo_pwd' => 'datetime',
+        'fecha_fin_inactivo' => 'datetime',
+    ];
 }

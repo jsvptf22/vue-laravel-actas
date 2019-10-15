@@ -3,7 +3,6 @@
 namespace App\Http;
 
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
-use Laravel\Passport\Http\Middleware\CheckClientCredentials;
 
 class Kernel extends HttpKernel
 {
@@ -15,12 +14,12 @@ class Kernel extends HttpKernel
      * @var array
      */
     protected $middleware = [
+        \App\Http\Middleware\TrustProxies::class,
         \App\Http\Middleware\CheckForMaintenanceMode::class,
         \Illuminate\Foundation\Http\Middleware\ValidatePostSize::class,
         \App\Http\Middleware\TrimStrings::class,
         \Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull::class,
-        \App\Http\Middleware\TrustProxies::class,
-        \App\Http\Middleware\Cors::class
+        \Barryvdh\Cors\HandleCors::class,
     ];
 
     /**
@@ -59,10 +58,10 @@ class Kernel extends HttpKernel
         'cache.headers' => \Illuminate\Http\Middleware\SetCacheHeaders::class,
         'can' => \Illuminate\Auth\Middleware\Authorize::class,
         'guest' => \App\Http\Middleware\RedirectIfAuthenticated::class,
+        'password.confirm' => \Illuminate\Auth\Middleware\RequirePassword::class,
         'signed' => \Illuminate\Routing\Middleware\ValidateSignature::class,
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
-        'client' =>  CheckClientCredentials::class
     ];
 
     /**
@@ -76,6 +75,7 @@ class Kernel extends HttpKernel
         \Illuminate\Session\Middleware\StartSession::class,
         \Illuminate\View\Middleware\ShareErrorsFromSession::class,
         \App\Http\Middleware\Authenticate::class,
+        \Illuminate\Routing\Middleware\ThrottleRequests::class,
         \Illuminate\Session\Middleware\AuthenticateSession::class,
         \Illuminate\Routing\Middleware\SubstituteBindings::class,
         \Illuminate\Auth\Middleware\Authorize::class,

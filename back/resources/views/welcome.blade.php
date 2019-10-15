@@ -1,4 +1,4 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
     <head>
         <meta charset="utf-8">
@@ -8,7 +8,6 @@
 
         <!-- Fonts -->
         <link href="https://fonts.googleapis.com/css?family=Nunito:200,600" rel="stylesheet">
-        INSERT INTO `actas`.`s_user` (`login`, `password`, `email`, `firstname`, `secondname`, `firstlastname`, `secondlastname`, `state`) VALUES ('sebasjsv22@gmail.com', '$2y$10$RUE6Dir6T2AEGlVYf.q67OYDui.3gmrUhjej2IJ3kemyWxfmNwfUq', 'sebasjsv22@gmail.com', 'jhon', 'sebastian', 'valencia', 'perez', '1');
 
         <!-- Styles -->
         <style>
@@ -92,6 +91,7 @@
                     <a href="https://blog.laravel.com">Blog</a>
                     <a href="https://nova.laravel.com">Nova</a>
                     <a href="https://forge.laravel.com">Forge</a>
+                    <a href="https://vapor.laravel.com">Vapor</a>
                     <a href="https://github.com/laravel/laravel">GitHub</a>
                 </div>
             </div>
