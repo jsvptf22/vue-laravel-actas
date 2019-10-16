@@ -44,9 +44,14 @@ class ActDocumentController extends Controller
                 $data->topicListDescription,
                 $ActDocument->idact_document
             );
+            $Response->data->document = [
+                'id' => $ActDocument->idact_document,
+                'identificator' => $ActDocument->identificator,
+                'initialDate' => $ActDocument->created_at,
+                'finalDate' => $ActDocument->updated_at
+            ];
             $Response->success = 1;
             $Response->message = "Docuento guardado";
-            $Response->data->documentId = $ActDocument->idact_document;
         }
 
         return json_encode($Response);

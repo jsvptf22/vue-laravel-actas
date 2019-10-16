@@ -9,8 +9,11 @@
       @ok="handleOk"
     >
       <form ref="form" @submit.stop.prevent="handleSubmit">
+        <b-form-group label="Identificación" label-for="identificationInput">
+          <b-form-input id="identificationInput" v-model="identification"></b-form-input>
+        </b-form-group>
         <b-form-group label="Nombre" label-for="nameInput">
-          <b-form-input id="nameInput" v-model="username  "></b-form-input>
+          <b-form-input id="nameInput" v-model="username"></b-form-input>
         </b-form-group>
         <b-form-group label="Correo electrónico" label-for="emailInput">
           <b-form-input id="emailInput" v-model="email"></b-form-input>
@@ -30,7 +33,8 @@ export default {
     return {
       lunchModal: this.showModal,
       username: this.newUserName,
-      email: ""
+      email: "",
+      identification: ""
     };
   },
   methods: {
@@ -54,7 +58,10 @@ export default {
           responseType: "json",
           data: {
             email: this.email,
-            username: this.username
+            username: this.username,
+            identification: this.identification,
+            key: this.$session.get("key"),
+            externalToken: this.$session.get("externalToken")
           },
           headers: {
             Authorization: this.$session.get("apiToken")
@@ -63,8 +70,9 @@ export default {
         .then(response => {
           if (response.data.success) {
             this.$emit("createUser", {
-              id: response.data.id + "-" + 1,
-              nombre_completo: this.username
+              id: response.data.data.userId,
+              nombre_completo: response.data.data.name,
+              externo: 1
             });
 
             this.$nextTick(() => {

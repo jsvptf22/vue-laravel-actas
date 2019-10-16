@@ -6,8 +6,11 @@ Vue.use(Vuex);
 const store = new Vuex.Store({
     state: {
         documentInformation: {
-            documentId: 0,
             modalTitle: '',
+            documentId: 0,
+            identificator: 0,
+            initialDate: '',
+            finalDate: '',
             subject: '',
             topicList: [],
             topicListDescription: [],

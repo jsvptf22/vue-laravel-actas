@@ -15,7 +15,7 @@ class CreateVactUser extends Migration
     {
         DB::statement("create or replace VIEW v_act_user AS 
             (select 
-                concat(funcionario.idfuncionario,'-0') AS id,
+                funcionario.idfuncionario AS id,
                 funcionario.login AS usuario,
                 funcionario.email AS correo,
                 concat(funcionario.nombres,' ',funcionario.apellidos) AS nombre_completo,
@@ -24,7 +24,7 @@ class CreateVactUser extends Migration
             from funcionario)
             union 
             (select 
-                concat(tercero.idtercero,'-1') AS id,
+                tercero.idtercero AS id,
                 '' AS usuario,
                 tercero.correo AS correo,
                 tercero.nombre as nombre_completo,

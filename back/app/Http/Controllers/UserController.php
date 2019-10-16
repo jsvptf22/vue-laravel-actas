@@ -16,7 +16,7 @@ class UserController extends Controller
             $query = $request->input('query');
             $data = \App\VActUser::where('nombre_completo', 'like', "%{$query}%")
                 ->limit(20)
-                ->get(['id', 'nombre_completo']);
+                ->get(['id', 'nombre_completo', 'externo']);
         } else {
             $data = null;
         }
@@ -28,15 +28,25 @@ class UserController extends Controller
      */
     public function createExternal(Request $request)
     {
-        throw new Exception("hacer peticion a app", 1);
+        $key = $request->input('key');
+        $externalToken = $request->input('externalToken');
+        $name = $request->input('username');
+        $email = $request->input('email');
+        $identification = $request->input('identification');
 
-        $ActExternalUser = new \App\ActExternalUser();
-        $ActExternalUser->firstname = $request->input('username');
-        $ActExternalUser->firstlastname = '';
-        $ActExternalUser->email = $request->input('email') ?? '';
-        return [
-            'success' => $ActExternalUser->save(),
-            'id' => $ActExternalUser->idact_external_user
-        ];
+        $Client = new \GuzzleHttp\Client();
+        $clientRequest = $Client->request('POST', env('SAIA_APP_FOLDER') . 'tercero/guardar.php', [
+            'form_params' => [
+                'key' => $key,
+                'token' => $externalToken,
+                'nombre' => $name,
+                'correo' => $email,
+                'tipo' => 1, //persona natural
+                'identificacion' => $identification,
+                'tipo_identificacion' => 'CC',
+            ]
+        ]);
+
+        return $clientRequest->getBody();
     }
 }

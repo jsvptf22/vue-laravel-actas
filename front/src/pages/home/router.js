@@ -52,7 +52,7 @@ router.beforeEach((to, from, next) => {
                 router.app.$session.set('key', key);
                 router.app.$session.set(
                     'externalToken',
-                    response.externalToken
+                    response.data.externalToken
                 );
                 router.app.$session.set(
                     'apiToken',
