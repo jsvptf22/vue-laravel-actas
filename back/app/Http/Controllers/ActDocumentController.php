@@ -47,8 +47,8 @@ class ActDocumentController extends Controller
             $Response->data->document = [
                 'id' => $ActDocument->idact_document,
                 'identificator' => $ActDocument->identificator,
-                'initialDate' => $ActDocument->created_at,
-                'finalDate' => $ActDocument->updated_at
+                'initialDate' => $ActDocument->created_at->format('Y-m-d H:i:s'),
+                'finalDate' => $ActDocument->updated_at->format('Y-m-d H:i:s')
             ];
             $Response->success = 1;
             $Response->message = "Docuento guardado";

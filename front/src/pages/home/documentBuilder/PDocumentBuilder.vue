@@ -17,6 +17,11 @@
                 class="btn btn-secondary"
                 v-on:click="showModal(4)"
               >Desarrollo de tema</button>
+              <button
+                type="button"
+                class="btn btn-secondary"
+                v-on:click="showModal(5)"
+              >Asignación de roles</button>
             </div>
           </div>
         </div>
@@ -38,17 +43,17 @@
               <table class="table table-bordered">
                 <tr>
                   <td>Acta N°</td>
-                  <td>{{documentInformation.documentId}}</td>
+                  <td>{{documentInformation.identificator}}</td>
                   <td>Tema / Asunto</td>
                   <td colspan="3">{{documentInformation.subject}}</td>
                 </tr>
                 <tr>
                   <td>Fecha</td>
-                  <td>{{documentInformation.initialDate}}</td>
+                  <td>{{getInitialDate()}}</td>
                   <td>Hora Inicio</td>
-                  <td></td>
+                  <td>{{getInitialTime()}}</td>
                   <td>Hora Final</td>
-                  <td>{{documentInformation.finalDate}}</td>
+                  <td>{{getFinaltime()}}</td>
                 </tr>
                 <tr>
                   <td>Lugar</td>
@@ -130,9 +135,18 @@
             <div class="col-12">
               <table class="table table-bordered">
                 <tr>
-                  <td class="firm_square">Elaborado por:</td>
-                  <td class="firm_square">Revisado por:</td>
-                  <td class="firm_square">Aprobado por:</td>
+                  <td class="firm_square">
+                    Revisado por:
+                    <span
+                      v-if="documentInformation.roles.secretary"
+                    >{{documentInformation.roles.secretary.nombre_completo}}</span>
+                  </td>
+                  <td class="firm_square">
+                    Aprobado por:
+                    <span
+                      v-if="documentInformation.roles.president"
+                    >{{documentInformation.roles.president.nombre_completo}}</span>
+                  </td>
                 </tr>
               </table>
             </div>
@@ -166,6 +180,26 @@ import { mapState } from "vuex";
 export default {
   name: "PDocumentBuilder",
   methods: {
+    showModal(type) {
+      switch (type) {
+        case 1:
+          this.$router.push("/users");
+          break;
+        case 2:
+          this.$router.push("/subject");
+          break;
+        case 3:
+          this.$router.push("/topics");
+          break;
+        case 4:
+          this.$router.push("/topic");
+          break;
+        case 5:
+          this.$router.push("/roles");
+          break;
+      }
+      this.$bvModal.show("componentModal");
+    },
     saveData() {
       this.$http
         .request({
@@ -190,7 +224,7 @@ export default {
     },
     updateData(data) {
       let newData = {
-        documentId: data.document.documentId,
+        documentId: data.document.id,
         identificator: data.document.identificator,
         initialDate: data.document.initialDate,
         finalDate: data.document.finalDate,
@@ -214,23 +248,6 @@ export default {
 
       this.$store.commit("refreshDocumentInformation", newData);
     },
-    showModal(type) {
-      switch (type) {
-        case 1:
-          this.$router.push("/users");
-          break;
-        case 2:
-          this.$router.push("/subject");
-          break;
-        case 3:
-          this.$router.push("/topics");
-          break;
-        case 4:
-          this.$router.push("/topic");
-          break;
-      }
-      this.$bvModal.show("componentModal");
-    },
     getTopicLabel(topicId) {
       return this.documentInformation.topicList.find(i => i.id == topicId)
         .label;
@@ -240,6 +257,39 @@ export default {
     },
     getInvited() {
       return this.documentInformation.userList.filter(u => u.externo == 1);
+    },
+    getInitialDate() {
+      if (!this.documentInformation.initialDate) {
+        return "";
+      }
+
+      let m = this.moment(
+        this.documentInformation.initialDate,
+        "YYYY-MM-DD HH:mm:ss"
+      );
+      return m.format("YYYY-MM-DD");
+    },
+    getInitialTime() {
+      if (!this.documentInformation.initialDate) {
+        return "";
+      }
+
+      let m = this.moment(
+        this.documentInformation.initialDate,
+        "YYYY-MM-DD HH:mm:ss"
+      );
+      return m.format("HH:mm:ss");
+    },
+    getFinaltime() {
+      if (!this.documentInformation.finalDate) {
+        return "";
+      }
+
+      let m = this.moment(
+        this.documentInformation.finalDate,
+        "YYYY-MM-DD HH:mm:ss"
+      );
+      return m.format("HH:mm:ss");
     }
   },
   computed: mapState(["documentInformation"])

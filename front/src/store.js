@@ -14,7 +14,8 @@ const store = new Vuex.Store({
             subject: '',
             topicList: [],
             topicListDescription: [],
-            userList: []
+            userList: [],
+            roles: {}
         }
     },
     mutations: {

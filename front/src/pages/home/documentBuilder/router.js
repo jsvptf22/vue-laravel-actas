@@ -2,6 +2,7 @@ import UserAutocomplete from './components/UserAutocomplete.vue';
 import Subject from './components/Subject.vue';
 import Topics from './components/Topics.vue';
 import Topic from './components/Topic.vue';
+import Roles from './components/Roles.vue';
 
 const PDocumentBuilderRoutes = [
     {
@@ -19,6 +20,10 @@ const PDocumentBuilderRoutes = [
     {
         path: '/topic',
         component: Topic
+    },
+    {
+        path: '/roles',
+        component: Roles
     }
 ];
 

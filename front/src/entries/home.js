@@ -1,9 +1,11 @@
 import Vue from 'vue';
 import BootstrapVue from 'bootstrap-vue';
 import VueSession from 'vue-session';
+import moment from 'moment';
 
 Vue.use(VueSession);
 Vue.use(BootstrapVue);
+Vue.prototype.moment = moment;
 Vue.config.productionTip = false;
 
 import 'bootstrap/dist/css/bootstrap.css';

@@ -2,7 +2,7 @@
   <div class="row">
     <div class="col-12">
       <div class="form-group">
-        <label class="typo__label">Listado de temas</label>
+        <label>Listado de temas</label>
         <multiselect
           v-model="value"
           track-by="id"
