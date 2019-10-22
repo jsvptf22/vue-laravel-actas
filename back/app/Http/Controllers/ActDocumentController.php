@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use stdClass;
 use Dompdf\Dompdf;
 
+use App\Mail\MailtrapExample;
+use Illuminate\Support\Facades\Mail;
 
 class ActDocumentController extends Controller
 {
@@ -338,5 +340,12 @@ HTML;
         $Response->data->route = $fileRoute;
 
         return json_encode($Response);
+    }
+
+    public function sendDocument()
+    {
+        Mail::to('jhon.valencia@cerok.com')->send(new MailtrapExample());
+
+        return 'A message has been sent to Mailtrap!';
     }
 }

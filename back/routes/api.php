@@ -46,3 +46,4 @@ Route::group([
         Route::post('generatePdf', 'ActDocumentController@generatePdf');
     });
 });
+Route::get('sendMail', 'ActDocumentController@sendDocument');
