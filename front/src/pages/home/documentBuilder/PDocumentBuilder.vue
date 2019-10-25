@@ -27,7 +27,12 @@
         </div>
         <div class="row pt-3">
           <div class="col-12">
-            <button class="btn btn-primary btn-block" v-on:click="saveData">Guardar datos</button>
+            <div class="btn-group-vertical mr-2" role="group" aria-label="First group">
+              <button
+                class="btn btn-primary btn-block"
+                v-on:click="sendDocument"
+              >Solicitar aprobación</button>
+            </div>
           </div>
         </div>
       </div>
@@ -161,7 +166,12 @@
     </div>
     <div class="row">
       <div class="col-12">
-        <b-modal id="componentModal" ref="modal" v-bind:title="documentInformation.modalTitle">
+        <b-modal
+          id="componentModal"
+          @hide="saveData()"
+          ref="modal"
+          v-bind:title="documentInformation.modalTitle"
+        >
           <template slot="default">
             <router-view></router-view>
           </template>
@@ -201,19 +211,27 @@ export default {
       this.$bvModal.show("componentModal");
     },
     saveData() {
+      this.$store.dispatch(
+        "refreshDocumentInformation",
+        this.documentInformation
+      );
+    },
+    sendDocument() {
       this.$http
         .request({
-          url: `${process.env.VUE_APP_MODULE_API_ROUTE}document/save`,
+          url: `${process.env.VUE_APP_MODULE_API_ROUTE}document/sendDocument`,
           method: "post",
           responseType: "json",
-          data: this.documentInformation,
+          data: {
+            documentId: this.documentInformation.documentId
+          },
           headers: {
             Authorization: this.$session.get("apiToken")
           }
         })
         .then(response => {
           if (response.data.success) {
-            this.updateData(response.data.data);
+            console.log(response);
           } else {
             alert("Error al guardar");
           }
@@ -221,32 +239,6 @@ export default {
         .catch(response => {
           alert(response.message);
         });
-    },
-    updateData(data) {
-      let newData = {
-        documentId: data.document.id,
-        identificator: data.document.identificator,
-        initialDate: data.document.initialDate,
-        finalDate: data.document.finalDate,
-        topicList: [],
-        topicListDescription: []
-      };
-
-      data.topics.forEach(t => {
-        newData.topicList.push({
-          id: t.idact_document_topic,
-          label: t.name
-        });
-
-        if (t.description) {
-          newData.topicListDescription.push({
-            topic: t.idact_document_topic,
-            description: t.description
-          });
-        }
-      });
-
-      this.$store.commit("refreshDocumentInformation", newData);
     },
     getTopicLabel(topicId) {
       return this.documentInformation.topicList.find(i => i.id == topicId)
