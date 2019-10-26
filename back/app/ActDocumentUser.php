@@ -6,8 +6,25 @@ use Illuminate\Database\Eloquent\Model;
 
 class ActDocumentUser extends Model
 {
+    /**
+     * creador
+     */
     const MANAGER = 1;
+
+    /**
+     * asistente
+     */
     const ASISTANTS = 2;
+
+    /**
+     * presidente
+     */
+    const PRESIDENT = 3;
+
+    /**
+     * secretario
+     */
+    const SECRETARY = 4;
 
     /**
      * The table associated with the model.
@@ -33,5 +50,6 @@ class ActDocumentUser extends Model
         'state',
         'user_identification',
         'fk_act_document',
+        'external',
     ];
 }

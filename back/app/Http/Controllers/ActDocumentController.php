@@ -20,27 +20,27 @@ class ActDocumentController extends Controller
             'data' => new stdClass()
         ];
 
-        $data = (object) $request->all();
+        try {
+            $data = (object) $request->all();
 
-        if (!empty($data->documentId)) {
-            $ActDocument = \App\ActDocument::find($data->documentId);
-        } else {
-            $ActDocument = new \App\ActDocument();
-        }
-
-        $ActDocument->subject = $data->subject;
-
-        if (!$ActDocument->save()) {
-            $Response->message = "Error al guardar";
-        } else {
-            if (empty($data->documentId)) {
-                $this->bindManager($request->user(), $ActDocument->idact_document);
+            if (!empty($data->documentId)) {
+                $ActDocument = \App\ActDocument::find($data->documentId);
+            } else {
+                $ActDocument = new \App\ActDocument();
             }
 
-            $this->bindAsistants(
-                $data->userList,
-                $ActDocument->idact_document
+            $ActDocument->subject = $data->subject;
+
+            if (!$ActDocument->save()) {
+                throw new \Exception("Error al guardar", 1);
+            }
+
+            $this->bindUsers(
+                $request,
+                $ActDocument->idact_document,
+                $data
             );
+
             $Response->data->topics = $this->saveTopics(
                 $data->topicList,
                 $data->topicListDescription,
@@ -54,26 +54,65 @@ class ActDocumentController extends Controller
             ];
             $Response->success = 1;
             $Response->message = "Docuento guardado";
+        } catch (\Throwable $th) {
+            $Response->message = $th->getMessage();
         }
 
         return json_encode($Response);
     }
 
     /**
-     * asigna el creador del documento
+     * vincula los funcionarios al documento
+     *
+     * @param object $request
+     * @param object $documentId
+     * @param object $data
+     * @return void
+     * @author jhon sebastian valencia <jhon.valencia@cerok.com>
+     * @date 2019-10-26
+     */
+    public function bindUsers($request, $documentId, $data)
+    {
+        //vinculo el creador o responsable
+        if (empty($data->documentId)) {
+            $this->bindManager($request->user(), $documentId);
+        }
+
+        //vinculo los asistentes
+        $this->bindAsistants($data->userList, $documentId);
+
+        //vinculo los encargados de aprobar el documento 
+        $this->bindRoles($data->roles, $documentId);
+    }
+
+    /**
+     * asigno el creador o responsable del documento
+     *
+     * @param object $user
+     * @param integer $documentId
+     * @return void
+     * @author jhon sebastian valencia <jhon.valencia@cerok.com>
+     * @date 2019
      */
     public function bindManager($user, $documentId)
     {
         $ActDocumentUser = new \App\ActDocumentUser();
         $ActDocumentUser->state = 1;
-        $ActDocumentUser->user_identification = $user->ids_user . "-" . 0;
+        $ActDocumentUser->user_identification = $user->idfuncionario;
         $ActDocumentUser->relation_type = \App\ActDocumentUser::MANAGER;
+        $ActDocumentUser->external = 0;
         $ActDocumentUser->fk_act_document = $documentId;
         $ActDocumentUser->save();
     }
 
     /**
-     * guarda los asistentes del encuentro
+     * vincula los asistentes
+     *
+     * @param array $userList
+     * @param integer $documentId
+     * @return void
+     * @author jhon sebastian valencia <jhon.valencia@cerok.com>
+     * @date 2019
      */
     public function bindAsistants($userList, $documentId)
     {
@@ -94,6 +133,7 @@ class ActDocumentController extends Controller
 
             $ActDocumentUser->state = 1;
             $ActDocumentUser->user_identification = $user['id'];
+            $ActDocumentUser->external = $user['externo'];
             $ActDocumentUser->relation_type = \App\ActDocumentUser::ASISTANTS;
             $ActDocumentUser->fk_act_document = $documentId;
             $ActDocumentUser->save();
@@ -101,7 +141,74 @@ class ActDocumentController extends Controller
     }
 
     /**
-     * guarda los temas del encuentro
+     * vincula los encargados de aprobar el documento
+     *
+     * @param array $roles
+     * @param integer $documentId
+     * @return void
+     * @author jhon sebastian valencia <jhon.valencia@cerok.com>
+     * @date 2019
+     */
+    public function bindRoles($roles, $documentId)
+    {
+        \App\ActDocumentUser::where('fk_act_document', $documentId)
+            ->where('relation_type', \App\ActDocumentUser::PRESIDENT)
+            ->where('state', 1)
+            ->update(['state' => 0]);
+
+        if (!empty($roles['president'])) {
+            $ActDocumentUser = \App\ActDocumentUser::where('fk_act_document', $documentId)
+                ->where('relation_type', \App\ActDocumentUser::PRESIDENT)
+                ->where('user_identification', $roles['president']['id'])
+                ->first();
+
+            if (!$ActDocumentUser) {
+                $ActDocumentUser = new \App\ActDocumentUser();
+            }
+
+            $ActDocumentUser->state = 1;
+            $ActDocumentUser->user_identification = $roles['president']['id'];
+            $ActDocumentUser->external = $roles['president']['externo'];
+            $ActDocumentUser->relation_type = \App\ActDocumentUser::PRESIDENT;
+            $ActDocumentUser->fk_act_document = $documentId;
+            $ActDocumentUser->save();
+
+            unset($ActDocumentUser);
+        }
+
+        \App\ActDocumentUser::where('fk_act_document', $documentId)
+            ->where('relation_type', \App\ActDocumentUser::SECRETARY)
+            ->where('state', 1)
+            ->update(['state' => 0]);
+
+        if (!empty($roles['secretary'])) {
+            $ActDocumentUser = \App\ActDocumentUser::where('fk_act_document', $documentId)
+                ->where('relation_type', \App\ActDocumentUser::SECRETARY)
+                ->where('user_identification', $roles['secretary']['id'])
+                ->first();
+
+            if (!$ActDocumentUser) {
+                $ActDocumentUser = new \App\ActDocumentUser();
+            }
+
+            $ActDocumentUser->state = 1;
+            $ActDocumentUser->user_identification = $roles['secretary']['id'];
+            $ActDocumentUser->external = $roles['secretary']['externo'];
+            $ActDocumentUser->relation_type = \App\ActDocumentUser::SECRETARY;
+            $ActDocumentUser->fk_act_document = $documentId;
+            $ActDocumentUser->save();
+        }
+    }
+
+    /**
+     * guarda los temas del documento
+     *
+     * @param array $topicList
+     * @param array $topicListDescription
+     * @param integer $documentId
+     * @return array
+     * @author jhon sebastian valencia <jhon.valencia@cerok.com>
+     * @date 2019
      */
     public function saveTopics($topicList, $topicListDescription, $documentId)
     {
@@ -253,7 +360,7 @@ class ActDocumentController extends Controller
                                     <tr>
                                         <td>   Es un hecho establecido hace demasiado tiempo que un lector se distraerá con el contenido del texto de un sitio mientras que mira su diseño. El punto de usar Lorem Ipsum es que tiene una distribución más o menos normal de las letras, al contrario de usar textos como por ejemplo "Contenido aquí, contenido aquí". Estos textos hacen parecerlo un español que se puede leer. Muchos paquetes de autoedición y editores de páginas web usan el Lorem Ipsum como su texto por defecto, y al hacer una búsqueda de "Lorem Ipsum" va a dar por resultado muchos sitios web que usan este texto si se encuentran en estado de desarrollo. Muchas versiones han evolucionado a través de los años, algunas veces por accidente, otras veces a propósito (por ejemplo insertándole humor y cosas por el estilo).
 
-</td>
+                                        </td>
                                     </tr>
                                 </table>
                             </div>
@@ -284,10 +391,10 @@ class ActDocumentController extends Controller
                                     <tr>
                                         <td>   Es un hecho establecido hace demasiado tiempo que un lector se distraerá con el contenido del texto de un sitio mientras que mira su diseño. El punto de usar Lorem Ipsum es que tiene una distribución más o menos normal de las letras, al contrario de usar textos como por ejemplo "Contenido aquí, contenido aquí". Estos textos hacen parecerlo un español que se puede leer. Muchos paquetes de autoedición y editores de páginas web usan el Lorem Ipsum como su texto por defecto, y al hacer una búsqueda de "Lorem Ipsum" va a dar por resultado muchos sitios web que usan este texto si se encuentran en estado de desarrollo. Muchas versiones han evolucionado a través de los años, algunas veces por accidente, otras veces a propósito (por ejemplo insertándole humor y cosas por el estilo).
 
-Es un hecho establecido hace demasiado tiempo que un lector se distraerá con el contenido del texto de un sitio mientras que mira su diseño. El punto de usar Lorem Ipsum es que tiene una distribución más o menos normal de las letras, al contrario de usar textos como por ejemplo "Contenido aquí, contenido aquí". Estos textos hacen parecerlo un español que se puede leer. Muchos paquetes de autoedición y editores de páginas web usan el Lorem Ipsum como su texto por defecto, y al hacer una búsqueda de "Lorem Ipsum" va a dar por resultado muchos sitios web que usan este texto si se encuentran en estado de desarrollo. Muchas versiones han evolucionado a través de los años, algunas veces por accidente, otras veces a propósito (por ejemplo insertándole humor y cosas por el estilo).
+                                        Es un hecho establecido hace demasiado tiempo que un lector se distraerá con el contenido del texto de un sitio mientras que mira su diseño. El punto de usar Lorem Ipsum es que tiene una distribución más o menos normal de las letras, al contrario de usar textos como por ejemplo "Contenido aquí, contenido aquí". Estos textos hacen parecerlo un español que se puede leer. Muchos paquetes de autoedición y editores de páginas web usan el Lorem Ipsum como su texto por defecto, y al hacer una búsqueda de "Lorem Ipsum" va a dar por resultado muchos sitios web que usan este texto si se encuentran en estado de desarrollo. Muchas versiones han evolucionado a través de los años, algunas veces por accidente, otras veces a propósito (por ejemplo insertándole humor y cosas por el estilo).
 
-Es un hecho establecido hace demasiado tiempo que un lector se distraerá con el contenido del texto de un sitio mientras que mira su diseño. El punto de usar Lorem Ipsum es que tiene una distribución más o menos normal de las letras, al contrario de usar textos como por ejemplo "Contenido aquí, contenido aquí". Estos textos hacen parecerlo un español que se puede leer. Muchos paquetes de autoedición y editores de páginas web usan el Lorem Ipsum como su texto por defecto, y al hacer una búsqueda de "Lorem Ipsum" va a dar por resultado muchos sitios web que usan este texto si se encuentran en estado de desarrollo. Muchas versiones han evolucionado a través de los años, algunas veces por accidente, otras veces a propósito (por ejemplo insertándole humor y cosas por el estilo).
-</td>
+                                        Es un hecho establecido hace demasiado tiempo que un lector se distraerá con el contenido del texto de un sitio mientras que mira su diseño. El punto de usar Lorem Ipsum es que tiene una distribución más o menos normal de las letras, al contrario de usar textos como por ejemplo "Contenido aquí, contenido aquí". Estos textos hacen parecerlo un español que se puede leer. Muchos paquetes de autoedición y editores de páginas web usan el Lorem Ipsum como su texto por defecto, y al hacer una búsqueda de "Lorem Ipsum" va a dar por resultado muchos sitios web que usan este texto si se encuentran en estado de desarrollo. Muchas versiones han evolucionado a través de los años, algunas veces por accidente, otras veces a propósito (por ejemplo insertándole humor y cosas por el estilo).
+                                        </td>
                                     </tr>
                                 </table>
                             </div>
