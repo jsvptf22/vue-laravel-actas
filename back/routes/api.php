@@ -46,3 +46,6 @@ Route::group([
         Route::post('sendDocument', 'ActDocumentController@sendDocument');
     });
 });
+
+
+Route::get('sendDocument', 'ActDocumentController@sendDocument');

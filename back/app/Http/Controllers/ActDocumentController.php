@@ -262,7 +262,7 @@ class ActDocumentController extends Controller
      * @author jhon sebastian valencia <jhon.valencia@cerok.com>
      * @date 2019-10-26
      */
-    public function generatePdf($ActDocument)
+    public static function generatePdf($ActDocument)
     {
         $Response = (object) [
             'success' => 0,
@@ -308,16 +308,10 @@ class ActDocumentController extends Controller
         try {
             $documentId = $request->input('documentId');
             $ActDocument = ActDocument::find($documentId);
-            $data = $this->generatePdf($ActDocument);
-
-            if (!$data->success) {
-                throw new \Exception($data->message, 1);
-            }
-
             $DocumentApprobation = new DocumentApprobation(
-                $data->data
+                $ActDocument
             );
-            Mail::to('jhon.valencia@cerok.com')->send($DocumentApprobation);
+            Mail::send($DocumentApprobation);
 
             $Response->success = 1;
             $Response->message = "Documento enviado por correo";
