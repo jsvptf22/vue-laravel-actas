@@ -231,7 +231,7 @@ export default {
         })
         .then(response => {
           if (response.data.success) {
-            console.log(response);
+            alert("documento enviado para aprobación");
           } else {
             alert("Error al guardar");
           }

@@ -299,6 +299,10 @@ class ActDocumentController extends Controller
      */
     public function sendDocument(Request $request)
     {
+        $request->validate([
+            'documentId' => 'required|integer'
+        ]);
+
         $Response = (object) [
             'success' => 0,
             'message' => '',
@@ -320,5 +324,46 @@ class ActDocumentController extends Controller
         }
 
         return json_encode($Response);
+    }
+
+    public function approve(Request $request)
+    {
+        $request->validate([
+            'user' => 'required|string',
+            'password' => 'required|string',
+            'documentId' => 'required|integer',
+            'approve' => 'required|integer'
+        ]);
+
+        $Response = (object) [
+            'success' => 0,
+            'message' => '',
+            'data' => new stdClass()
+        ];
+
+        try {
+            $user = $request->input('user');
+            $password = $request->input('password');
+            $documentId = $request->input('documentId');
+            $approve = $request->input('approve');
+
+            $Client = new \GuzzleHttp\Client();
+            $clientRequest = $Client->request('POST', env('SAIA_APP_FOLDER') . 'funcionario/login.php', [
+                'form_params' => [
+                    'externalAccess' => 1,
+                    'user' => $user,
+                    'password' => $password
+                ]
+            ]);
+            $response = json_decode($clientRequest->getBody());
+
+            if (!$response->success) {
+                throw new \Exception("Datos incorrectos", 1);
+            }
+        } catch (\Throwable $th) {
+            $Response->message = $th->getMessage();
+        }
+
+        return $Response;
     }
 }

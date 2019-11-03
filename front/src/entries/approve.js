@@ -12,12 +12,12 @@ import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap-vue/dist/bootstrap-vue.css';
 import '@/assets/theme/css/pages.min.css';
 
-import PHome from '@/pages/home/PHome.vue';
-import router from '@/pages/home/router';
-import store from '@/pages/home/store';
+import PApprove from '@/pages/approve/PApprove.vue';
+import router from '@/pages/approve/router';
+import store from '@/pages/approve/store';
 
 let vue = new Vue({
-    render: h => h(PHome),
+    render: h => h(PApprove),
     router,
     store
 }).$mount('#app');
