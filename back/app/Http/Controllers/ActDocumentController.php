@@ -5,10 +5,12 @@ namespace App\Http\Controllers;
 use PDF;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Storage;
 use App\Mail\DocumentApprobation;
 use App\ActDocument;
+use App\ActDocumentApprobation;
 use App\ActDocumentUser;
-use Illuminate\Support\Facades\Storage;
+use App\User;
 use stdClass;
 
 class ActDocumentController extends Controller
@@ -290,6 +292,49 @@ class ActDocumentController extends Controller
     }
 
     /**
+     * genera los registros de la ruta de aprobacion
+     *
+     * @param object $ActDocument
+     * @return void
+     * @author jhon sebastian valencia <jhon.valencia@cerok.com>
+     * @date 2019-11-06
+     */
+    public function defineApprobationUsers($ActDocument)
+    {
+        ActDocumentApprobation::where('fk_act_document', $ActDocument->idact_document)
+            ->where('state', 1)
+            ->update(['state' => 0]);
+
+        $types = [
+            ActDocumentUser::SECRETARY,
+            ActDocumentUser::PRESIDENT,
+        ];
+
+        $users = User::join(
+            'act_document_user',
+            'funcionario.idfuncionario',
+            '=',
+            'act_document_user.user_identification'
+        )
+            ->where('act_document_user.fk_act_document', $ActDocument->idact_document)
+            ->whereIn('act_document_user.relation_type', $types)
+            ->where('act_document_user.state', 1)
+            ->where('act_document_user.external', 0)
+            ->get();
+
+        foreach ($users as $User) {
+            $ActDocumentApprobation = new ActDocumentApprobation();
+            $ActDocumentApprobation->fk_funcionario = $User->idfuncionario;
+            $ActDocumentApprobation->fk_act_document = $ActDocument->idact_document;
+            $ActDocumentApprobation->state = 1;
+
+            if (!$ActDocumentApprobation->save()) {
+                throw new \Exception("Error al generar la ruta de aprobacion", 1);
+            }
+        }
+    }
+
+    /**
      * envia el documento en pdf para su aprobacion
      *
      * @param Request $request
@@ -311,9 +356,14 @@ class ActDocumentController extends Controller
 
         try {
             $documentId = $request->input('documentId');
+            $route = $request->input('route');
+
             $ActDocument = ActDocument::find($documentId);
+            $this->defineApprobationUsers($ActDocument);
+
             $DocumentApprobation = new DocumentApprobation(
-                $ActDocument
+                $ActDocument,
+                $route
             );
             Mail::send($DocumentApprobation);
 
@@ -355,15 +405,18 @@ class ActDocumentController extends Controller
                     'password' => $password
                 ]
             ]);
+
             $response = json_decode($clientRequest->getBody());
 
             if (!$response->success) {
-                throw new \Exception("Datos incorrectos", 1);
+                throw new \Exception("Credenciales incorrectas", 1);
             }
+
+            $ActDocument = ActDocument::find($documentId);
         } catch (\Throwable $th) {
             $Response->message = $th->getMessage();
         }
 
-        return $Response;
+        return json_encode($Response);
     }
 }

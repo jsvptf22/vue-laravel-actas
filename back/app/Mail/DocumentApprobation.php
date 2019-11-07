@@ -3,18 +3,41 @@
 namespace App\Mail;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 use App\Http\Controllers\ActDocumentController;
-use App\ActDocumentUser;
 use App\User;
 
 class DocumentApprobation extends Mailable
 {
     use Queueable, SerializesModels;
 
+    /**
+     * almacena el enlace que usuario
+     * abrira para aprobar o rechazar
+     *
+     * @var string
+     * @author jhon sebastian valencia <jhon.valencia@cerok.com>
+     * @date 2019-11-04
+     */
+    public $viewRoute;
+
+    /**
+     * almacena la ruta del pdf
+     *
+     * @var string
+     * @author jhon sebastian valencia <jhon.valencia@cerok.com>
+     * @date 2019-11-04
+     */
     public $pdfRoute;
+
+    /**
+     * almacena la instancia del documento
+     *
+     * @var object
+     * @author jhon sebastian valencia <jhon.valencia@cerok.com>
+     * @date 2019-11-04
+     */
     public $ActDocument;
 
     /**
@@ -22,9 +45,10 @@ class DocumentApprobation extends Mailable
      *
      * @return void
      */
-    public function __construct($ActDocument)
+    public function __construct($ActDocument, $viewRoute)
     {
         $this->ActDocument = $ActDocument;
+        $this->viewRoute = $viewRoute;
     }
 
     /**
@@ -73,21 +97,15 @@ class DocumentApprobation extends Mailable
      */
     public function getDestinations()
     {
-        $types = [
-            ActDocumentUser::SECRETARY,
-            ActDocumentUser::PRESIDENT,
-        ];
-
         $users = User::join(
-            'act_document_user',
+            'act_document_approbation',
             'funcionario.idfuncionario',
             '=',
-            'act_document_user.user_identification'
+            'act_document_approbation.fk_funcionario'
         )
-            ->where('act_document_user.fk_act_document', $this->ActDocument->idact_document)
-            ->whereIn('act_document_user.relation_type', $types)
-            ->where('act_document_user.state', 1)
-            ->where('act_document_user.external', 0)
+            ->where('act_document_approbation.fk_act_document', $this->ActDocument->idact_document)
+            ->where('act_document_approbation.state', 1)
+            ->whereNull('act_document_approbation.action')
             ->get();
 
         if (!$users) {

@@ -223,7 +223,8 @@ export default {
           method: "post",
           responseType: "json",
           data: {
-            documentId: this.documentInformation.documentId
+            documentId: this.documentInformation.documentId,
+            route: process.env.VUE_APP_PAGE_APPROVE_ROUTE
           },
           headers: {
             Authorization: this.$session.get("apiToken")
