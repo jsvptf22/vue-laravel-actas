@@ -21,7 +21,7 @@
                         <td>Acta N°</td>
                         <td>{{$ActDocument->identificator}}</td>
                         <td>Tema / Asunto</td>
-                        <td colspan="3">{$ActDocument->subject}}</td>
+                        <td colspan="3">{{$ActDocument->subject}}</td>
                     </tr>
                     <tr>
                         <td>Fecha</td>

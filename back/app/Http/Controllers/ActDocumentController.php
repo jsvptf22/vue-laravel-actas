@@ -357,6 +357,7 @@ class ActDocumentController extends Controller
         try {
             $documentId = $request->input('documentId');
             $route = $request->input('route');
+            $route .= $documentId;
 
             $ActDocument = ActDocument::find($documentId);
             $this->defineApprobationUsers($ActDocument);
@@ -376,6 +377,15 @@ class ActDocumentController extends Controller
         return json_encode($Response);
     }
 
+    /**
+     * guarda la accion ejecutada de un funcionario
+     * sobre la aprobacion del documento
+     *
+     * @param Request $request
+     * @return object
+     * @author jhon sebastian valencia <jhon.valencia@cerok.com>
+     * @date 2019-11-07
+     */
     public function approve(Request $request)
     {
         $request->validate([
@@ -406,13 +416,34 @@ class ActDocumentController extends Controller
                 ]
             ]);
 
-            $response = json_decode($clientRequest->getBody());
+            $requestResponse = json_decode($clientRequest->getBody());
 
-            if (!$response->success) {
+            if (!$requestResponse->success) {
                 throw new \Exception("Credenciales incorrectas", 1);
             }
 
             $ActDocument = ActDocument::find($documentId);
+            $approbationUsers = $ActDocument->getApprobationUsers();
+
+            foreach ($approbationUsers as $User) {
+                if ($User->idfuncionario == $requestResponse->data->key) {
+                    $approved = ActDocumentApprobation::where('fk_act_document', $documentId)
+                        ->where('fk_funcionario', $User->idfuncionario)
+                        ->where('state', 1)
+                        ->update(['action' => $approve]);
+
+                    break;
+                }
+            }
+
+            if (!isset($approved)) {
+                throw new \Exception("El usuario no se encuentra en la ruta de aprobación", 1);
+            } else if (isset($approved) && count($approbationUsers) == 1) {
+                $ActDocument->approve();
+            }
+
+            $Response->message = "Acción registrada satisfactoriamente";
+            $Response->success = 1;
         } catch (\Throwable $th) {
             $Response->message = $th->getMessage();
         }

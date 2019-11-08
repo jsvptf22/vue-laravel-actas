@@ -31,9 +31,9 @@
 <script>
 export default {
   name: "PLogin",
+  props: ["documentId"],
   data: function() {
     return {
-      documentId: 0,
       user: "",
       password: ""
     };
@@ -54,9 +54,9 @@ export default {
         })
         .then(response => {
           if (response.data.success) {
-            console.log(response);
+            alert(response.data.message);
           } else {
-            alert("Error al guardar");
+            alert(response.data.message);
           }
         })
         .catch(response => {

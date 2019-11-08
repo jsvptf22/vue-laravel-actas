@@ -9,8 +9,9 @@ import PLogin from '@/pages/approve/login/PLogin.vue';
 
 const routes = [
     {
-        path: '/login',
-        component: PLogin
+        path: '/login/:documentId',
+        component: PLogin,
+        props: true
     },
     {
         path: '',

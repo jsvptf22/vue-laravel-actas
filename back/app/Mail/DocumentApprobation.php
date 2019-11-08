@@ -6,7 +6,6 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 use App\Http\Controllers\ActDocumentController;
-use App\User;
 
 class DocumentApprobation extends Mailable
 {
@@ -97,16 +96,7 @@ class DocumentApprobation extends Mailable
      */
     public function getDestinations()
     {
-        $users = User::join(
-            'act_document_approbation',
-            'funcionario.idfuncionario',
-            '=',
-            'act_document_approbation.fk_funcionario'
-        )
-            ->where('act_document_approbation.fk_act_document', $this->ActDocument->idact_document)
-            ->where('act_document_approbation.state', 1)
-            ->whereNull('act_document_approbation.action')
-            ->get();
+        $users = $this->ActDocument->getApprobationUsers();
 
         if (!$users) {
             throw new Exception("Se debe definir el secretario y el presidente", 1);
